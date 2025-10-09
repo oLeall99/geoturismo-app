@@ -11,8 +11,6 @@ export default function SearchScreen() {
         <TextInput
           style={styles.searchInput}
           mode="outlined"
-          outlineStyle={{ borderBottomWidth: 1, borderColor: '#90E0EF' }}
-          activeOutlineColor="#0077B6"
           placeholder="Buscar"
           right={<TextInput.Icon icon="magnify" />}
         />
