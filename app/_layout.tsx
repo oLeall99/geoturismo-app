@@ -4,7 +4,6 @@ import { DefaultTheme, Provider as PaperProvider } from 'react-native-paper';
 import 'react-native-reanimated';
 
 export default function RootLayout() {
-
   return (
     <PaperProvider theme={DefaultTheme}>
       <Stack>

@@ -5,6 +5,5 @@ export default function ProfileScreen() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Perfil</Text>
     </View>
-  )
+  );
 }
-

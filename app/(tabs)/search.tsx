@@ -5,6 +5,5 @@ export default function SearchScreen() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Buscar</Text>
     </View>
-  )
+  );
 }
-
