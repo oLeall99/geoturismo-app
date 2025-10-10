@@ -31,7 +31,7 @@ const Item = ({ title, onPress }: { title: string; onPress: () => void }) => (
   <View style={styles.item}>
     <Text style={styles.text}>{title}</Text>
     <TouchableOpacity onPress={onPress}>
-      <MaterialCommunityIcons name="trash-can-outline" size={20} color="#1E1E1E" />
+      <MaterialCommunityIcons name="trash-can-outline" size={20} color="#2B2D42" />
     </TouchableOpacity>
   </View>
 );
@@ -52,17 +52,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 8,
+    marginBottom: 4,
   },
   text: {
     fontSize: 16,
-    color: '#1E1E1E',
-  },
-  firstItemText: {
-    textDecorationLine: 'underline',
-    color: '#1E1E1E',
+    color: '#2B2D42',
   },
   separator: {
     height: 1,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: '#999999',
   },
 });

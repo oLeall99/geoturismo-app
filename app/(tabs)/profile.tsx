@@ -1,7 +1,7 @@
+import FlatListPerfil, { ItemProps } from '@/components/FlatListPerfil';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-import FlatListPerfil, { ItemProps } from '@/components/FlatListPerfil';
+import ProfileIcon from '../../assets/icons/profile-icon.svg';
 
 const data: ItemProps[] = [
   {
@@ -22,15 +22,17 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <MaterialCommunityIcons name="account-circle-outline" size={200} color="black" />
-        <Text style={styles.name}>Turista</Text>
+        <ProfileIcon width={200} height={200} style={styles.profileContainer} />
+        <Text style={styles.name}>Nome Turista</Text>
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons name="exit-to-app" size={24} color="red" />
           <Text style={styles.buttonText}>Sair</Text>
         </TouchableOpacity>
-
         <FlatListPerfil data={data} onPress={() => {}} />
       </View>
+      <TouchableOpacity style={styles.oficialButton}>
+        <Text style={styles.oficialButtonText}>Oficializar</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -46,18 +48,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '100%',
     alignItems: 'center',
+    marginBottom: 24,
   },
   name: {
-    fontSize: 28,
-    fontWeight: 'bold',
+    fontSize: 17,
+    color: '#2B2D42',
+    marginBottom: 16,
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
+    marginBottom: 16,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 15,
     color: 'red',
+  },
+  oficialButton: {
+    alignItems: 'center',
+    backgroundColor: '#D3AF37',
+    padding: 10,
+    borderRadius: 8,
+    position: 'absolute',
+    bottom: 20,
+    width: '90%',
+  },
+  oficialButtonText: {
+    fontSize: 17,
+    color: 'white',
   },
 });
