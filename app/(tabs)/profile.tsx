@@ -1,7 +1,8 @@
 import FlatListPerfil, { ItemProps } from '@/components/FlatListPerfil';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import ProfileIcon from '../../assets/icons/profile-icon.svg';
+// @ts-ignore
+import ProfileIcon from '@/assets/icons/profile-icon.svg';
 
 const data: ItemProps[] = [
   {
@@ -22,7 +23,7 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
-        <ProfileIcon width={200} height={200} style={styles.profileContainer} />
+        <ProfileIcon width={200} height={200} style={styles.profileIcon} />
         <Text style={styles.name}>Nome Turista</Text>
         <TouchableOpacity style={styles.button}>
           <MaterialCommunityIcons name="exit-to-app" size={24} color="red" />
@@ -49,6 +50,9 @@ const styles = StyleSheet.create({
     width: '100%',
     alignItems: 'center',
     marginBottom: 24,
+  },
+  profileIcon: {
+    marginBottom: 16,
   },
   name: {
     fontSize: 17,
