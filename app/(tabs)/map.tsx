@@ -1,20 +1,32 @@
-import NewLocalModal from '@/components/modals/NewLocalModal';
 import CustomIconButton from '@/components/ui/CustomIconButton';
+import LocalModal from '@/components/ui/modals/LocalModal';
+import NewLocalModal from '@/components/ui/modals/NewLocalModal';
+import { Local } from '@/types/local';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function MapScreen() {
-  const [modalVisible, setModalVisible] = useState(false);
-
+  const [newLocalModalVisible, setNewLocalModalVisible] = useState(false);
+  const [localModalVisible, setLocalModalVisible] = useState(false);
+  const [local, setLocal] = useState<Local | null>(null);
   return (
     <SafeAreaView style={styles.container}>
       <MapView style={styles.map} />
       <View style={styles.button}>
-        <CustomIconButton icon="plus" color="black" onPress={() => setModalVisible(true)} />
+        <CustomIconButton icon="plus" color="black" onPress={() => setNewLocalModalVisible(true)} />
+        <CustomIconButton icon="plus" color="black" onPress={() => setLocalModalVisible(true)} />
       </View>
-      <NewLocalModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <NewLocalModal
+        visible={newLocalModalVisible}
+        onClose={() => setNewLocalModalVisible(false)}
+      />
+      <LocalModal
+        visible={localModalVisible}
+        onClose={() => setLocalModalVisible(false)}
+        local={local!}
+      />
     </SafeAreaView>
   );
 }

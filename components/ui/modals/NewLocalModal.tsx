@@ -9,18 +9,18 @@ import {
   View,
 } from 'react-native';
 import { Card, Modal, Portal } from 'react-native-paper';
-import CustomButton from '../ui/CustomButton';
-import CustomTextInput from '../ui/CustomTextInput';
+import CustomButton from '../CustomButton';
+import CustomTextInput from '../CustomTextInput';
 
-interface PrefeituraModalProps {
+interface NewLocalModalProps {
   visible: boolean;
   onClose: () => void;
 }
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
-const MODAL_HEIGHT = SCREEN_HEIGHT * 0.6;
+const MODAL_HEIGHT = SCREEN_HEIGHT * 0.7;
 
-export default function PrefeituraModal({ visible, onClose }: PrefeituraModalProps) {
+export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) {
   const [localName, setLocalName] = useState('');
   const [street, setStreet] = useState('');
   const [number, setNumber] = useState('');
@@ -46,9 +46,9 @@ export default function PrefeituraModal({ visible, onClose }: PrefeituraModalPro
                 contentContainerStyle={styles.scrollContent}
               >
                 <View style={styles.descriptionContainer}>
-                  <Text style={styles.descriptionLabel}>Nome:</Text>
+                  <Text style={styles.descriptionLabel}>Nome do Local:</Text>
                   <CustomTextInput
-                    label="Nome"
+                    label="Nome do Local"
                     value={localName}
                     onChangeText={setLocalName}
                     type="text"
@@ -56,30 +56,70 @@ export default function PrefeituraModal({ visible, onClose }: PrefeituraModalPro
                 </View>
 
                 <View style={styles.descriptionContainer}>
-                  <Text style={styles.descriptionLabel}>Email:</Text>
+                  <Text style={styles.descriptionLabel}>Rua:</Text>
                   <CustomTextInput
-                    label="Email"
+                    label="Rua"
                     value={street}
                     onChangeText={setStreet}
-                    type="email"
+                    type="text"
                   />
                 </View>
 
+                <View style={styles.row}>
+                  <View style={{ width: '25%', flex: 1 }}>
+                    <View style={styles.descriptionContainer}>
+                      <Text style={styles.descriptionLabel}>Número:</Text>
+                      <CustomTextInput
+                        label="Número"
+                        value={number}
+                        onChangeText={setNumber}
+                        type="numeric"
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ width: '70%', flex: 1 }}>
+                    <View style={styles.descriptionContainer}>
+                      <Text style={styles.descriptionLabel}>CEP:</Text>
+                      <CustomTextInput
+                        label="CEP"
+                        value={cep}
+                        onChangeText={setCep}
+                        type="numeric"
+                      />
+                    </View>
+                  </View>
+                </View>
                 <View style={styles.descriptionContainer}>
-                  <Text style={styles.descriptionLabel}>Responsável:</Text>
+                  <Text style={styles.descriptionLabel}>Complemento:</Text>
                   <CustomTextInput
-                    label="Responsável"
-                    value={number}
-                    onChangeText={setNumber}
+                    label="Complemento"
+                    value={complement}
+                    onChangeText={setComplement}
                     type="text"
                   />
                 </View>
                 <View style={styles.descriptionContainer}>
-                  <Text style={styles.descriptionLabel}>Orgão:</Text>
-                  <CustomTextInput label="Orgão" value={cep} onChangeText={setCep} type="text" />
+                  <Text style={styles.descriptionLabel}>Categoria:</Text>
+                  <CustomTextInput
+                    label="Categoria"
+                    value={category}
+                    onChangeText={setCategory}
+                    type="text"
+                  />
+                </View>
+                <View style={styles.descriptionContainer}>
+                  <Text style={styles.descriptionLabel}>Descrição:</Text>
+                  <CustomTextInput
+                    label="Descrição"
+                    value={description}
+                    onChangeText={setDescription}
+                    type="text"
+                    multiline={true}
+                  />
                 </View>
               </ScrollView>
-              <CustomButton title="Salvar" onPress={() => {}} />
+              <CustomButton title="Cadastrar" onPress={() => {}} />
             </Card.Content>
           </Card>
         </KeyboardAvoidingView>

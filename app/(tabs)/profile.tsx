@@ -4,7 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
-import PrefeituraModal from '@/components/modals/PrefeituraModal';
+import PrefeituraModal from '@/components/ui/modals/PrefeituraModal';
 import { useState } from 'react';
 
 const data: ItemProps[] = [
