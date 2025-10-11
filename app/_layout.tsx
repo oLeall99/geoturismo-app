@@ -7,8 +7,11 @@ export default function RootLayout() {
   return (
     <PaperProvider theme={DefaultTheme}>
       <Stack>
+        <Stack.Screen name="cadastro" options={{ headerShown: false }} />
+
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
+
       <StatusBar style="auto" />
     </PaperProvider>
   );
