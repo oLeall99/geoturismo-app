@@ -1,4 +1,5 @@
 import { Local } from '@/types/local';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import {
   Dimensions,
   KeyboardAvoidingView,
@@ -8,7 +9,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import { Card, Modal, Portal } from 'react-native-paper';
+import { Button, Card, Modal, Portal } from 'react-native-paper';
 
 interface LocalModalProps {
   visible: boolean;
@@ -22,6 +23,11 @@ const MODAL_HEIGHT = SCREEN_HEIGHT * 0.75;
 export default function LocalModal({ visible, onClose }: LocalModalProps) {
   return (
     <Portal>
+      {visible && (
+        <Button mode="text" style={styles.buttonExit} onPress={() => onClose()}>
+          <MaterialCommunityIcons name="close" size={24} color="white" />
+        </Button>
+      )}
       <Modal visible={visible} onDismiss={onClose} contentContainerStyle={styles.modalContainer}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -89,5 +95,17 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 12,
     marginBottom: 12,
+  },
+  buttonExit: {
+    position: 'absolute',
+    top: 20,
+    right: 5,
+    padding: 8,
+    zIndex: 1,
+  },
+  textExit: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
 });
