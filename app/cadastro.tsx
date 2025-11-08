@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, Card } from 'react-native-paper';
@@ -10,6 +11,7 @@ export default function CadastroScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
+  const router = useRouter();
 
   return (
     <SafeAreaView style={style.container}>
@@ -57,17 +59,22 @@ export default function CadastroScreen() {
               onChangeText={setConfSenha}
             />
           </View>
-        </Card.Content>
 
-        <Card.Actions style={style.actions}>
-          <Button mode="contained" style={style.button}>
-            Entrar
+          <Button
+            mode="contained"
+            style={style.button}
+            onPress={() => {
+              console.log('Entrar pressed, navigating to /map');
+              router.push('/map');
+            }}
+          >
+            Cadastrar
           </Button>
-        </Card.Actions>
 
-        <Text onPress={() => alert('Você clicou no texto!')} style={style.redirect}>
-          Já possui Login? <Text style={{ fontWeight: 'bold' }}>entrar</Text>
-        </Text>
+          <Text onPress={() => alert('Você clicou no texto!')} style={style.redirect}>
+            Já possui Login? <Text style={{ fontWeight: 'bold' }}>entrar</Text>
+          </Text>
+        </Card.Content>
       </Card>
     </SafeAreaView>
   );
@@ -83,8 +90,7 @@ const style = StyleSheet.create({
 
   formulario: {
     width: '85%',
-    paddingVertical: 20,
-    paddingHorizontal: 15,
+    height: '55%',
     justifyContent: 'space-between',
   },
 
@@ -122,8 +128,11 @@ const style = StyleSheet.create({
   },
 
   button: {
+    marginTop: 10,
+    alignSelf: 'center',
     width: '90%',
     backgroundColor: '#2B2D42',
+    fontSize: 17,
     borderRadius: 6,
   },
 

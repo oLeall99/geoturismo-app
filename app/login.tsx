@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, Card } from 'react-native-paper';
@@ -8,6 +9,7 @@ import Logo from '@/assets/images/logo.svg';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const router = useRouter();
 
   return (
     <SafeAreaView style={style.container}>
@@ -41,11 +43,16 @@ export default function LoginScreen() {
           </View>
         </Card.Content>
 
-        <Card.Actions style={style.actions}>
-          <Button mode="contained" style={style.button}>
-            Entrar
-          </Button>
-        </Card.Actions>
+        <Button
+          mode="contained"
+          style={style.button}
+          onPress={() => {
+            console.log('Entrar pressed, navigating to /map');
+            router.push('/map');
+          }}
+        >
+          Entrar
+        </Button>
 
         <Text onPress={() => alert('Você clicou no texto!')} style={style.redirect}>
           Não Possui Login? <Text style={{ fontWeight: 'bold' }}>cadastre-se</Text>
