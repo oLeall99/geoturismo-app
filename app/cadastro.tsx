@@ -71,7 +71,7 @@ export default function CadastroScreen() {
             Cadastrar
           </Button>
 
-          <Text onPress={() => alert('Você clicou no texto!')} style={style.redirect}>
+          <Text onPress={() => router.push('/login')} style={style.redirect}>
             Já possui Login? <Text style={{ fontWeight: 'bold' }}>entrar</Text>
           </Text>
         </Card.Content>

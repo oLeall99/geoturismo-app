@@ -41,22 +41,22 @@ export default function LoginScreen() {
               onChangeText={setSenha}
             />
           </View>
+
+          <Button
+            mode="contained"
+            style={style.button}
+            onPress={() => {
+              console.log('Entrar pressed, navigating to /map');
+              router.push('/map');
+            }}
+            >
+            Entrar
+          </Button>
+
+          <Text onPress={() => router.push('/cadastro')} style={style.redirect}>
+            Não Possui Login? <Text style={{ fontWeight: 'bold' }}>cadastre-se</Text>
+          </Text>
         </Card.Content>
-
-        <Button
-          mode="contained"
-          style={style.button}
-          onPress={() => {
-            console.log('Entrar pressed, navigating to /map');
-            router.push('/map');
-          }}
-        >
-          Entrar
-        </Button>
-
-        <Text onPress={() => alert('Você clicou no texto!')} style={style.redirect}>
-          Não Possui Login? <Text style={{ fontWeight: 'bold' }}>cadastre-se</Text>
-        </Text>
       </Card>
     </SafeAreaView>
   );
@@ -65,27 +65,26 @@ export default function LoginScreen() {
 const style = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-evenly',
+    paddingTop: 120,
+    justifyContent: 'flex-start',
+    gap: 50,
     alignItems: 'center',
     backgroundColor: '#0077B6',
   },
 
   formulario: {
     width: '85%',
-    height: '55%',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
   },
 
   cardContent: {
     width: '100%',
-    height: '60%',
     justifyContent: 'space-evenly',
   },
 
   campos: {
     fontSize: 17,
     color: '#2B2D42',
-    width: '90%',
     alignSelf: 'flex-start',
     marginLeft: '5%',
     marginBottom: 3,
@@ -112,6 +111,8 @@ const style = StyleSheet.create({
   },
 
   button: {
+    marginTop: 10,
+    alignSelf: 'center',
     width: '90%',
     backgroundColor: '#2B2D42',
     fontSize: 17,
@@ -120,7 +121,6 @@ const style = StyleSheet.create({
 
   redirect: {
     width: '100%',
-    justifyContent: 'center',
     textAlign: 'center',
     color: '#2B2D42',
     marginTop: 10,
