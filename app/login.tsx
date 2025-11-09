@@ -53,7 +53,7 @@ export default function LoginScreen() {
             Entrar
           </Button>
 
-          <Text onPress={() => router.push('/cadastro')} style={style.redirect}>
+          <Text onPress={() => router.push('/loc_auth')} style={style.redirect}>
             Não Possui Login? <Text style={{ fontWeight: 'bold' }}>cadastre-se</Text>
           </Text>
         </Card.Content>
