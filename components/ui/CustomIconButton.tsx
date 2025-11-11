@@ -1,9 +1,17 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-export default function CustomIconButton({ icon, color }: { icon: string; color: string }) {
+export default function CustomIconButton({
+  icon,
+  color,
+  onPress,
+}: {
+  icon: string;
+  color: string;
+  onPress?: () => void;
+}) {
   return (
-    <TouchableOpacity style={styles.button}>
+    <TouchableOpacity style={styles.button} onPress={onPress}>
       <MaterialCommunityIcons name={icon as any} size={36} color={color} />
     </TouchableOpacity>
   );
