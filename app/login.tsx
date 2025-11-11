@@ -1,6 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Button, Card } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
@@ -12,76 +20,98 @@ export default function LoginScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={style.container}>
-      <Logo />
-      <Card style={style.formulario}>
-        <Card.Title
-          title="Login"
-          titleStyle={{ textAlign: 'center', fontSize: 17, padding: 0, margin: 0 }}
-        />
-        <Card.Content style={style.cardContent}>
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Email:</Text>
-            <TextInput
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              style={style.input}
-              value={email}
-              onChangeText={setEmail}
+    <SafeAreaView style={style.safeArea}>
+      <KeyboardAvoidingView
+        style={style.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={style.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Logo />
+
+          <Card style={style.formulario}>
+            <Card.Title
+              title="Login"
+              titleStyle={{
+                textAlign: 'center',
+                fontSize: 21,
+                padding: 0,
+                marginTop: 5,
+              }}
             />
-          </View>
+            <Card.Content style={style.cardContent}>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Email:</Text>
+                <TextInput
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  style={style.input}
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
 
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Senha:</Text>
-            <TextInput
-              textContentType="password"
-              secureTextEntry
-              style={style.input}
-              value={senha}
-              onChangeText={setSenha}
-            />
-          </View>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Senha:</Text>
+                <TextInput
+                  textContentType="password"
+                  secureTextEntry
+                  style={style.input}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+              </View>
 
-          <Button
-            mode="contained"
-            style={style.button}
-            onPress={() => {
-              console.log('Entrar pressed, navigating to /map');
-              router.push('/map');
-            }}
-            >
-            Entrar
-          </Button>
+              <Button
+                mode="contained"
+                style={style.button}
+                onPress={() => router.push('/locAuth')}
+              >
+                Entrar
+              </Button>
 
-          <Text onPress={() => router.push('/loc_auth')} style={style.redirect}>
-            Não Possui Login? <Text style={{ fontWeight: 'bold' }}>cadastre-se</Text>
-          </Text>
-        </Card.Content>
-      </Card>
+              <Text
+                onPress={() => router.push('/cadastro')}
+                style={style.redirect}
+              >
+                Não possui login?{' '}
+                <Text style={{ fontWeight: 'bold' }}>Cadastre-se</Text>
+              </Text>
+            </Card.Content>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const style = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    paddingTop: 120,
-    justifyContent: 'flex-start',
-    gap: 50,
-    alignItems: 'center',
     backgroundColor: '#0077B6',
   },
-
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingTop: 60,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    gap: 25,
+  },
   formulario: {
     width: '85%',
     justifyContent: 'space-between',
   },
-
   cardContent: {
     width: '100%',
     justifyContent: 'space-evenly',
   },
-
   campos: {
     fontSize: 17,
     color: '#2B2D42',
@@ -89,13 +119,11 @@ const style = StyleSheet.create({
     marginLeft: '5%',
     marginBottom: 3,
   },
-
   boxFormulario: {
     width: '100%',
     marginVertical: 5,
     alignItems: 'center',
   },
-
   input: {
     borderColor: '#2B2D42',
     borderWidth: 1,
@@ -104,12 +132,6 @@ const style = StyleSheet.create({
     height: 40,
     width: '90%',
   },
-
-  actions: {
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-
   button: {
     marginTop: 10,
     alignSelf: 'center',
@@ -118,7 +140,6 @@ const style = StyleSheet.create({
     fontSize: 17,
     borderRadius: 6,
   },
-
   redirect: {
     width: '100%',
     textAlign: 'center',

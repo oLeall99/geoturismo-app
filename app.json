@@ -59,11 +59,19 @@
       "reactCompiler": true
     },
     "extra": {
-      "router": {},
+      "router": {
+        "origin": "https://u.expo.dev"
+      },
       "eas": {
         "projectId": "d3be9fc5-4e25-49ca-adf7-a2fc27bc1fb6"
       }
     },
-    "owner": "leall"
+    "owner": "leall",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d3be9fc5-4e25-49ca-adf7-a2fc27bc1fb6"
+    }
   }
 }

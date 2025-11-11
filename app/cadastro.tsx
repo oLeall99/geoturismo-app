@@ -1,6 +1,14 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { Button, Card } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
@@ -14,91 +22,119 @@ export default function CadastroScreen() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={style.container}>
-      <Logo />
-      <Card style={style.formulario}>
-        <Card.Title
-          title="Cadastro"
-          titleStyle={{ textAlign: 'center', fontSize: 17, padding: 0, margin: 0 }}
-        />
-        <Card.Content style={style.cardContent}>
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Nome:</Text>
-            <TextInput style={style.input} value={nome} onChangeText={setNome} />
-          </View>
+    <SafeAreaView style={style.safeArea}>
+      <KeyboardAvoidingView
+        style={style.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+      >
+        <ScrollView
+          contentContainerStyle={style.scrollContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          <Logo />
 
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Email:</Text>
-            <TextInput
-              keyboardType="email-address"
-              textContentType="emailAddress"
-              style={style.input}
-              value={email}
-              onChangeText={setEmail}
+          <Card style={style.formulario}>
+            <Card.Title
+              title="Cadastro"
+              titleStyle={{
+                textAlign: 'center',
+                fontSize: 21,
+                padding: 0,
+                marginTop: 5,
+              }}
             />
-          </View>
+            <Card.Content style={style.cardContent}>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Nome:</Text>
+                <TextInput
+                  style={style.input}
+                  value={nome}
+                  onChangeText={setNome}
+                />
+              </View>
 
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Senha:</Text>
-            <TextInput
-              textContentType="password"
-              secureTextEntry
-              style={style.input}
-              value={senha}
-              onChangeText={setSenha}
-            />
-          </View>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Email:</Text>
+                <TextInput
+                  keyboardType="email-address"
+                  textContentType="emailAddress"
+                  style={style.input}
+                  value={email}
+                  onChangeText={setEmail}
+                />
+              </View>
 
-          <View style={style.boxFormulario}>
-            <Text style={style.campos}>Confirmar Senha:</Text>
-            <TextInput
-              textContentType="password"
-              secureTextEntry
-              style={style.input}
-              value={confSenha}
-              onChangeText={setConfSenha}
-            />
-          </View>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Senha:</Text>
+                <TextInput
+                  textContentType="password"
+                  secureTextEntry
+                  style={style.input}
+                  value={senha}
+                  onChangeText={setSenha}
+                />
+              </View>
 
-          <Button
-            mode="contained"
-            style={style.button}
-            onPress={() => {
-              console.log('Entrar pressed, navigating to /map');
-              router.push('/map');
-            }}
-          >
-            Cadastrar
-          </Button>
+              <View style={style.boxFormulario}>
+                <Text style={style.campos}>Confirmar Senha:</Text>
+                <TextInput
+                  textContentType="password"
+                  secureTextEntry
+                  style={style.input}
+                  value={confSenha}
+                  onChangeText={setConfSenha}
+                />
+              </View>
 
-          <Text onPress={() => router.push('/login')} style={style.redirect}>
-            Já possui Login? <Text style={{ fontWeight: 'bold' }}>entrar</Text>
-          </Text>
-        </Card.Content>
-      </Card>
+              <Button
+                mode="contained"
+                style={style.button}
+                onPress={() => {
+                  console.log('Cadastrar pressed, navigating to /map');
+                  router.push('/locAuth');
+                }}
+              >
+                Cadastrar
+              </Button>
+
+              <Text onPress={() => router.push('/login')} style={style.redirect}>
+                Já possui login?{' '}
+                <Text style={{ fontWeight: 'bold' }}>Entrar</Text>
+              </Text>
+            </Card.Content>
+          </Card>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 const style = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
     backgroundColor: '#0077B6',
   },
-
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingTop: 60,
+    paddingBottom: 40,
+    gap: 25,
+  },
   formulario: {
     width: '85%',
-    height: '55%',
     justifyContent: 'space-between',
   },
-
   cardContent: {
     width: '100%',
     justifyContent: 'space-evenly',
   },
-
   campos: {
     fontSize: 17,
     color: '#2B2D42',
@@ -106,13 +142,11 @@ const style = StyleSheet.create({
     marginLeft: '5%',
     marginBottom: 3,
   },
-
   boxFormulario: {
     width: '100%',
     marginVertical: 5,
     alignItems: 'center',
   },
-
   input: {
     borderColor: '#2B2D42',
     borderWidth: 1,
@@ -121,12 +155,6 @@ const style = StyleSheet.create({
     height: 40,
     width: '90%',
   },
-
-  actions: {
-    justifyContent: 'center',
-    marginTop: 10,
-  },
-
   button: {
     marginTop: 10,
     alignSelf: 'center',
@@ -135,7 +163,6 @@ const style = StyleSheet.create({
     fontSize: 17,
     borderRadius: 6,
   },
-
   redirect: {
     width: '100%',
     textAlign: 'center',
