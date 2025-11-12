@@ -1,6 +1,8 @@
+import { AuthService } from '@/services/auth';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -17,7 +19,28 @@ import Logo from '@/assets/images/logo.svg';
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  async function handleLogin() {
+    if (!email || !senha) {
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await AuthService.login({ email, senha });
+
+      // Se chegou até aqui, o login foi bem-sucedido
+      router.push('/locAuth');
+    } catch (err) {
+      console.error('Erro ao fazer login:', err);
+      Alert.alert('Erro', 'Falha ao fazer login. Verifique suas credenciais.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView style={style.safeArea}>
@@ -49,6 +72,7 @@ export default function LoginScreen() {
                 <TextInput
                   keyboardType="email-address"
                   textContentType="emailAddress"
+                  autoCapitalize="none"
                   style={style.input}
                   value={email}
                   onChangeText={setEmail}
@@ -69,9 +93,11 @@ export default function LoginScreen() {
               <Button
                 mode="contained"
                 style={style.button}
-                onPress={() => router.push('/locAuth')}
+                onPress={handleLogin}
+                loading={loading}
+                disabled={loading}
               >
-                Entrar
+                {loading ? 'Entrando...' : 'Entrar'}
               </Button>
 
               <Text

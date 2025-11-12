@@ -38,7 +38,8 @@ export interface RegisterData {
 
 export const AuthService = {
   async login(data: LoginData): Promise<LoginResponse> {
-    const response = await api.post('/Login', data);
+    const response = await api.post(`/login?email=${encodeURIComponent(data.email)}&senha=${encodeURIComponent(data.senha)}`);
+
     const token = response.data?.token;
     if (token) {
       await setToken(token);
