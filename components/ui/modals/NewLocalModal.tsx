@@ -19,12 +19,13 @@ import CustomTextInput from '../CustomTextInput';
 interface NewLocalModalProps {
   visible: boolean;
   onClose: () => void;
+  onLocalAdded: () => void; 
 }
 
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.7;
 
-export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) {
+export default function NewLocalModal({ visible, onClose, onLocalAdded }: NewLocalModalProps) {
   const [localName, setLocalName] = useState('');
   const [street, setStreet] = useState('');
   const [number, setNumber] = useState('');
@@ -68,6 +69,7 @@ export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) 
       await LocalService.create(newLocal);
       Alert.alert('Sucesso', 'Local cadastrado com sucesso!');
       onClose();
+      onLocalAdded();
     } catch (error: any) {
       console.error(error);
       Alert.alert('Erro', 'Falha ao cadastrar o local.');

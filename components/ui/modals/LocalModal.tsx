@@ -24,7 +24,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.75;
 
-export default function LocalModal({ visible, loading, onClose, local }: LocalModalProps) {
+export default function LocalModal({ visible, loading, local, onClose}: LocalModalProps) {
   const [index, setIndex] = useState(0);
 
   if (!local) return null;

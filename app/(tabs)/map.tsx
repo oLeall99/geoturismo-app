@@ -110,6 +110,7 @@ export default function MapScreen() {
           toolbarEnabled={false}
           showsTraffic={false}
           showsPointsOfInterest={false}
+          customMapStyle={mapStyle}
           showsBuildings
           showsUserLocation
           showsMyLocationButton
@@ -149,6 +150,7 @@ export default function MapScreen() {
       <NewLocalModal
         visible={newLocalModalVisible}
         onClose={() => setNewLocalModalVisible(false)}
+        onLocalAdded={loadLocals} 
       />
 
       {/* Modal do local selecionado */}
@@ -191,3 +193,40 @@ const styles = StyleSheet.create({
     right: 25,
   },
 });
+
+const mapStyle= [
+  {
+    "featureType": "administrative",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "poi",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "labels.icon",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  },
+  {
+    "featureType": "transit",
+    "stylers": [
+      {
+        "visibility": "off"
+      }
+    ]
+  }
+]
