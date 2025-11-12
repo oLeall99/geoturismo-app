@@ -1,22 +1,22 @@
-import { Place } from '@/app/(tabs)/map';
+import { Local } from '@/services/api/local';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Dimensions,
-  FlatList,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
-import { Card, Modal, Portal } from 'react-native-paper';
+import { ActivityIndicator, Card, Modal, Portal } from 'react-native-paper';
 
 interface LocalModalProps {
   visible: boolean;
-  local: Place | null;
+  loading: boolean;
+  local: Local | null;
   onClose: () => void;
 }
 
@@ -24,27 +24,27 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.75;
 
-export default function LocalModal({ visible, onClose, local }: LocalModalProps) {
+export default function LocalModal({ visible, loading, onClose, local }: LocalModalProps) {
   const [index, setIndex] = useState(0);
 
   if (!local) return null;
 
-  const categories = local.categories || [];
+  //const categories = local.categories || [];
   const itemsPerPage = 3;
 
   // Infinite carousel logic
   const handleNext = () => {
-    setIndex((prev) => (prev + itemsPerPage) % categories.length);
+    //setIndex((prev) => (prev + itemsPerPage) % categories.length);
   };
 
   const handlePrev = () => {
-    setIndex((prev) => (prev - itemsPerPage + categories.length) % categories.length);
+    //setIndex((prev) => (prev - itemsPerPage + categories.length) % categories.length);
   };
 
   const getDisplayedCategories = (start: number) => {
     const end = start + itemsPerPage;
-    if (end <= categories.length) return categories.slice(start, end);
-    return [...categories.slice(start), ...categories.slice(0, end - categories.length)];
+    //if (end <= categories.length) return categories.slice(start, end);
+    //return [...categories.slice(start), ...categories.slice(0, end - categories.length)];
   };
 
   const displayedCategories = getDisplayedCategories(index);
@@ -62,54 +62,59 @@ export default function LocalModal({ visible, onClose, local }: LocalModalProps)
         >
           <Card style={styles.card} elevation={5}>
             <Card.Content style={styles.cardContent}>
-              <ScrollView
+              {loading ? (
+                <ActivityIndicator size="large" color="#0077B6" />
+              ) : (
+
+                <ScrollView
                 showsVerticalScrollIndicator={false}
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={styles.scrollContent}
-              >
-                {/* Buttons */}
-                <View style={styles.buttonsContainer}>
-                  <TouchableOpacity style={styles.infoButton}>
-                    <Text style={styles.buttonTextInfo}>Informações</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity style={styles.reviewsButton}>
-                    <Text style={styles.buttonText}>Avaliações</Text>
-                  </TouchableOpacity>
-                </View>
-
-                {/* Local title */}
-                <Text style={styles.localTitle}>{local.title}</Text>
-
-                {/* Categories carousel */}
-                {categories.length > 0 && (
-                  <View style={styles.carouselContainer}>
-                    <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
-                      <MaterialCommunityIcons name="chevron-left" size={26} color="#2B2D42" />
+                >
+                  {/* Buttons */}
+                  <View style={styles.buttonsContainer}>
+                    <TouchableOpacity style={styles.infoButton}>
+                      <Text style={styles.buttonTextInfo}>Informações</Text>
                     </TouchableOpacity>
 
-                    <FlatList
-                      data={displayedCategories}
-                      keyExtractor={(item) => item.id}
-                      horizontal
-                      scrollEnabled={false}
-                      renderItem={({ item }) => (
-                        <View style={[styles.categoryBadge, { backgroundColor: item.color }]}>
-                          <Text style={styles.categoryText}>{item.label}</Text>
-                        </View>
-                      )}
-                      contentContainerStyle={styles.categoriesContainer}
-                    />
-
-                    <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
-                      <MaterialCommunityIcons name="chevron-right" size={26} color="#2B2D42" />
+                    <TouchableOpacity style={styles.reviewsButton}>
+                      <Text style={styles.buttonText}>Avaliações</Text>
                     </TouchableOpacity>
                   </View>
-                )}
 
-                {/* Local description */}
-                <Text style={styles.localDescription}>{local.description}</Text>
-              </ScrollView>
+                  {/* Local title */}
+                  <Text style={styles.localTitle}>{local.nome}</Text>
+
+                  {/* Categories carousel */}
+                  { /*categories.length > 0 && (
+                    <View style={styles.carouselContainer}>
+                    <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
+                    <MaterialCommunityIcons name="chevron-left" size={26} color="#2B2D42" />
+                    </TouchableOpacity>
+                  
+                    <FlatList
+                    data={displayedCategories}
+                    keyExtractor={(item) => item.id}
+                    horizontal
+                    scrollEnabled={false}
+                    renderItem={({ item }) => (
+                      <View style={[styles.categoryBadge, { backgroundColor: item.color }]}>
+                      <Text style={styles.categoryText}>{item.label}</Text>
+                      </View>
+                      )}
+                      contentContainerStyle={styles.categoriesContainer}
+                      />
+                    
+                      <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
+                      <MaterialCommunityIcons name="chevron-right" size={26} color="#2B2D42" />
+                      </TouchableOpacity>
+                      </View>
+                      XX)*/}
+
+                  {/* Local description */}
+                  <Text style={styles.localDescription}>{local.descricao}</Text>
+                </ScrollView>
+              )}
             </Card.Content>
           </Card>
         </KeyboardAvoidingView>

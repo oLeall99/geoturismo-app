@@ -1,10 +1,12 @@
 import FlatListPerfil, { ItemProps } from '@/components/ui/FlatListPerfil';
+import { AuthService } from '@/services/auth';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
 import PrefeituraModal from '@/components/ui/modals/PrefeituraModal';
+import { router } from 'expo-router';
 import { useState } from 'react';
 
 const data: ItemProps[] = [
@@ -29,7 +31,10 @@ export default function ProfileScreen() {
       <View style={styles.profileContainer}>
         <ProfileIcon width={200} height={200} style={styles.profileIcon} />
         <Text style={styles.name}>Nome Turista</Text>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity 
+          style={styles.button} 
+          onPress={() => { AuthService.logout(); router.replace('/login'); }}
+        >
           <MaterialCommunityIcons name="exit-to-app" size={24} color="red" />
           <Text style={styles.buttonText}>Sair</Text>
         </TouchableOpacity>

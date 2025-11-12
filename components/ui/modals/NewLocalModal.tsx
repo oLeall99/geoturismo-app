@@ -1,6 +1,9 @@
+import { LocalService } from '@/services/api/local';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import * as Location from 'expo-location';
 import { useState } from 'react';
 import {
+  Alert,
   Dimensions,
   KeyboardAvoidingView,
   Platform,
@@ -29,11 +32,54 @@ export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) 
   const [complement, setComplement] = useState('');
   const [category, setCategory] = useState('');
   const [description, setDescription] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleCreateLocal() {
+    if (!localName || !street || !number || !cep || !category) {
+      Alert.alert('Atenção', 'Preencha todos os campos obrigatórios.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // 🔹 Monta o endereço completo em uma string
+      const fullAddress = `${street}, ${number}, ${cep}, ${complement}`;
+
+      // 🔹 Obtém coordenadas com base no endereço
+      const geoResult = await Location.geocodeAsync(fullAddress);
+
+      if (!geoResult || geoResult.length === 0) {
+        throw new Error('Não foi possível obter a localização.');
+      }
+
+      const { latitude, longitude } = geoResult[0];
+
+      // 🔹 Monta o objeto para enviar à API
+      const newLocal = {
+        nome: localName,
+        endereco: fullAddress,
+        categoria: category,
+        descricao: description,
+        latitude,
+        longitude,
+      };
+
+      await LocalService.create(newLocal);
+      Alert.alert('Sucesso', 'Local cadastrado com sucesso!');
+      onClose();
+    } catch (error: any) {
+      console.error(error);
+      Alert.alert('Erro', 'Falha ao cadastrar o local.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <Portal>
       {visible && (
-        <Button mode="text" style={styles.buttonExit} onPress={() => onClose()}>
+        <Button mode="text" style={styles.buttonExit} onPress={onClose}>
           <MaterialCommunityIcons name="close" size={24} color="white" />
         </Button>
       )}
@@ -53,67 +99,40 @@ export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) 
               >
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Nome do Local:</Text>
-                  <CustomTextInput
-                    label="Nome do Local"
-                    value={localName}
-                    onChangeText={setLocalName}
-                    type="text"
-                  />
+                  <CustomTextInput label="Nome do Local" value={localName} onChangeText={setLocalName} type="text" />
                 </View>
 
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Rua:</Text>
-                  <CustomTextInput
-                    label="Rua"
-                    value={street}
-                    onChangeText={setStreet}
-                    type="text"
-                  />
+                  <CustomTextInput label="Rua" value={street} onChangeText={setStreet} type="text" />
                 </View>
 
                 <View style={styles.row}>
                   <View style={{ width: '25%', flex: 1 }}>
                     <View style={styles.descriptionContainer}>
                       <Text style={styles.descriptionLabel}>Número:</Text>
-                      <CustomTextInput
-                        label="Número"
-                        value={number}
-                        onChangeText={setNumber}
-                        type="numeric"
-                      />
+                      <CustomTextInput label="Número" value={number} onChangeText={setNumber} type="numeric" />
                     </View>
                   </View>
 
                   <View style={{ width: '70%', flex: 1 }}>
                     <View style={styles.descriptionContainer}>
                       <Text style={styles.descriptionLabel}>CEP:</Text>
-                      <CustomTextInput
-                        label="CEP"
-                        value={cep}
-                        onChangeText={setCep}
-                        type="numeric"
-                      />
+                      <CustomTextInput label="CEP" value={cep} onChangeText={setCep} type="numeric" />
                     </View>
                   </View>
                 </View>
+
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Complemento:</Text>
-                  <CustomTextInput
-                    label="Complemento"
-                    value={complement}
-                    onChangeText={setComplement}
-                    type="text"
-                  />
+                  <CustomTextInput label="Complemento" value={complement} onChangeText={setComplement} type="text" />
                 </View>
+
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Categoria:</Text>
-                  <CustomTextInput
-                    label="Categoria"
-                    value={category}
-                    onChangeText={setCategory}
-                    type="text"
-                  />
+                  <CustomTextInput label="Categoria" value={category} onChangeText={setCategory} type="text" />
                 </View>
+
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Descrição:</Text>
                   <CustomTextInput
@@ -125,7 +144,12 @@ export default function NewLocalModal({ visible, onClose }: NewLocalModalProps) 
                   />
                 </View>
               </ScrollView>
-              <CustomButton title="Cadastrar" onPress={() => {}} />
+
+              <CustomButton
+                title={loading ? 'Cadastrando...' : 'Cadastrar'}
+                onPress={handleCreateLocal}
+                loading={loading} // 🔹 mostra ícone de loading no botão
+              />
             </Card.Content>
           </Card>
         </KeyboardAvoidingView>
@@ -164,13 +188,9 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-
     justifyContent: 'space-between',
     alignItems: 'center',
     gap: 12,
-  },
-  halfInput: {
-    flex: 1,
   },
   descriptionContainer: {
     gap: 5,
@@ -186,10 +206,5 @@ const styles = StyleSheet.create({
     right: 5,
     padding: 8,
     zIndex: 1,
-  },
-  textExit: {
-    color: 'white',
-    fontSize: 24,
-    fontWeight: 'bold',
   },
 });

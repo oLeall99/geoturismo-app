@@ -1,26 +1,22 @@
-// services/auth.ts
 import * as SecureStore from 'expo-secure-store';
 import { api } from './config';
 
 const TOKEN_KEY = 'authToken';
 
-// Salvar token com segurança
+// Token helpers
 export async function setToken(token: string) {
   await SecureStore.setItemAsync(TOKEN_KEY, token);
 }
 
-// Buscar token armazenado
 export async function getToken() {
   return await SecureStore.getItemAsync(TOKEN_KEY);
 }
 
-// Remover token (logout)
 export async function clearToken() {
   await SecureStore.deleteItemAsync(TOKEN_KEY);
 }
 
-// --- Endpoints de autenticação ---
-
+// --- Auth Endpoints ---
 export interface LoginResponse {
   token: string;
 }
@@ -38,8 +34,8 @@ export interface RegisterData {
 
 export const AuthService = {
   async login(data: LoginData): Promise<LoginResponse> {
-    const response = await api.post(`/login?email=${encodeURIComponent(data.email)}&senha=${encodeURIComponent(data.senha)}`);
-
+    //const response = await api.post(`/Login?email=${encodeURIComponent(data.email)}&senha=${encodeURIComponent(data.senha)}`);
+    const response = await api.post('/Login', data);
     const token = response.data?.token;
     if (token) {
       await setToken(token);
@@ -54,5 +50,10 @@ export const AuthService = {
 
   async logout() {
     await clearToken();
+  },
+
+  async isAuthenticated() {
+    const token = await getToken();
+    return !!token;
   },
 };

@@ -1,6 +1,7 @@
 import CustomIconButton from '@/components/ui/CustomIconButton';
 import LocalModal from '@/components/ui/modals/LocalModal';
 import NewLocalModal from '@/components/ui/modals/NewLocalModal';
+import { Local, LocalService } from '@/services/api/local';
 import * as Location from 'expo-location';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -12,101 +13,91 @@ import {
 import MapView, { Marker, Region } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
- export type Place = {
-  id: string;
-  title: string;
-  description: string;
-  latitude: number;
-  longitude: number;
-  categories: { id: string; label: string; color: string }[];
-};
-
 export default function MapScreen() {
   const [newLocalModalVisible, setNewLocalModalVisible] = useState(false);
   const [localModalVisible, setLocalModalVisible] = useState(false);
-  const [local, setLocal] = useState<Place | null>(null);
+  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
-  const [places, setPlaces] = useState<Place[]>([]);
+  const [locals, setLocals] = useState<Local[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingLocalDetails, setLoadingLocalDetails] = useState(false);
   const mapRef = useRef<MapView>(null);
 
   useEffect(() => {
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permissão negada',
-          'Não é possível mostrar o mapa sem acesso à localização.'
-        );
-        return;
+      try {
+        // 🔹 Pedir permissão de localização
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+          Alert.alert(
+            'Permissão negada',
+            'Não é possível mostrar o mapa sem acesso à localização.'
+          );
+          setLoading(false);
+          return;
+        }
+
+        // 🔹 Obter posição atual
+        const { coords } = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Highest,
+        });
+
+        const newRegion: Region = {
+          latitude: coords.latitude,
+          longitude: coords.longitude,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        };
+
+        setRegion(newRegion);
+        mapRef.current?.animateToRegion(newRegion, 1000);
+
+        // 🔹 Buscar locais do backend
+        await loadLocals();
+      } catch (error) {
+        console.error('Erro ao carregar mapa:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os locais.');
+      } finally {
+        setLoading(false);
       }
-
-      const { coords } = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.Highest,
-      });
-
-      const newRegion: Region = {
-        latitude: coords.latitude,
-        longitude: coords.longitude,
-        latitudeDelta: 0.007,
-        longitudeDelta: 0.007,
-      };
-
-      setRegion(newRegion);
-      mapRef.current?.animateToRegion(newRegion, 1000);
-
-      // Mock de locais
-      const mockPlaces: Place[] = [
-        {
-          id: '1',
-          title: 'Praça Central',
-          description: 'Um ótimo lugar para relaxar e aproveitar o ar livre.',
-          latitude: coords.latitude + 0.001,
-          longitude: coords.longitude - 0.001,
-          categories: [
-            { id: '1', label: 'Parque', color: '#00B4D8' },
-            { id: '2', label: 'Família', color: '#90BE6D' },
-            { id: '3', label: 'Lazer', color: '#F9C74F' },
-            { id: '4', label: 'Lazer', color: '#F9C74F' },
-          ],
-        },
-        {
-          id: '2',
-          title: 'Museu Local',
-          description: 'Conheça a história da cidade e veja exposições únicas.',
-          latitude: coords.latitude - 0.0008,
-          longitude: coords.longitude + 0.0015,
-          categories: [
-            { id: '3', label: 'Lazer', color: '#F9C74F' },
-            { id: '1', label: 'Cultura', color: '#F94144' },
-            { id: '2', label: 'História', color: '#F3722C' },
-            { id: '4', label: 'Lazer', color: '#F9C74F' },
-            { id: '2', label: 'Educação', color: '#90BE6D' },
-          ],
-        },
-        {
-          id: '3',
-          title: 'Restaurante Vista Azul',
-          description: 'Culinária regional e vista incrível do pôr do sol.',
-          latitude: coords.latitude + 0.0012,
-          longitude: coords.longitude + 0.001,
-          categories: [
-            { id: '1', label: 'Restaurante', color: '#F9C74F' },
-            { id: '2', label: 'Romântico', color: '#577590' },
-            { id: '3', label: 'Lazer', color: '#F9C74F' },
-            { id: '4', label: 'Lazer', color: '#F9C74F' },
-          ],
-        },
-      ];
-
-      setPlaces(mockPlaces);
     })();
   }, []);
 
-  // 🔹 Ao clicar em um marcador
-  const handleMarkerPress = (place: Place) => {
-    setLocal(place);
-    setLocalModalVisible(true);
+  const loadLocals = async () => {
+    try {
+      setLoading(true);
+      const data = await LocalService.getAll();
+      setLocals(data);
+    } catch (error) {
+      console.error('Erro ao carregar locais:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os locais.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  // 🔹 Ao clicar em um marcador
+  const handleMarkerPress = async (local: Local) => {
+    setLoadingLocalDetails(true);
+    try {
+      const detailedLocal = await LocalService.getById(local.id_locais);
+      setSelectedLocal(detailedLocal);
+      setLocalModalVisible(true);
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do local:', error);
+      Alert.alert('Erro', 'Não foi possível carregar os detalhes do local.');
+    } finally {
+      setLoadingLocalDetails(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#0077B6" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -116,23 +107,27 @@ export default function MapScreen() {
           style={styles.map}
           initialRegion={region}
           showsCompass={false}
-          toolbarEnabled={false} 
+          toolbarEnabled={false}
+          showsTraffic={false}
           showsPointsOfInterest={false}
-          showsBuildings={true} 
+          showsBuildings
           showsUserLocation
           showsMyLocationButton
         >
+          {/* Marcador da posição do usuário */}
           <Marker coordinate={region} title="Você está aqui" pinColor="blue" />
-          {places.map((place) => (
+
+          {/* Marcadores de locais de interesse */}
+          {locals.map((local) => (
             <Marker
-              key={place.id}
+              key={local.id_locais}
               coordinate={{
-                latitude: place.latitude,
-                longitude: place.longitude,
+                latitude: local.latitude,
+                longitude: local.longitude,
               }}
-              title={place.title}
-              description={place.description}
-              onPress={() => handleMarkerPress(place)}
+              title={local.nome}
+              description={local.descricao}
+              onPress={() => handleMarkerPress(local)}
               pinColor="red"
             />
           ))}
@@ -157,11 +152,19 @@ export default function MapScreen() {
       />
 
       {/* Modal do local selecionado */}
-      {local && (
+      {selectedLocal && (
         <LocalModal
           visible={localModalVisible}
           onClose={() => setLocalModalVisible(false)}
-          local={local}
+          local={{
+            id_locais: selectedLocal.id_locais,
+            nome: selectedLocal.nome,
+            descricao: selectedLocal.descricao,
+            endereco: selectedLocal.endereco,
+            latitude: selectedLocal.latitude,
+            longitude: selectedLocal.longitude,
+          }}
+          loading={loadingLocalDetails}
         />
       )}
     </SafeAreaView>
@@ -170,6 +173,9 @@ export default function MapScreen() {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  loaderContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',

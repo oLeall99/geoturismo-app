@@ -1,8 +1,7 @@
 import { api } from '../config';
 
 export interface Local {
-  id: number;
-  usuario_id: number;
+  id_locais: number;
   nome: string;
   descricao: string;
   endereco: string;
@@ -21,7 +20,7 @@ export const LocalService = {
     return response.data;
   },
 
-  async create(dados: Omit<Local, 'id'>): Promise<Local> {
+  async create(dados: Omit<Local, 'id_locais'>): Promise<Local> {
     const response = await api.post('/Locais', dados);
     return response.data;
   },
