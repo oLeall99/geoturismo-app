@@ -1,14 +1,7 @@
+import { AuthService } from '@/services/auth';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { Button, Card } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
@@ -19,7 +12,34 @@ export default function CadastroScreen() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  async function handleCadastro() {
+    if (!nome || !email || !senha || !confSenha) {
+      Alert.alert('Erro', 'Preencha todos os campos.');
+      return;
+    }
+
+    if (senha !== confSenha) {
+      Alert.alert('Erro', 'As senhas não coincidem.');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await AuthService.register({ nome, email, senha });
+
+      Alert.alert('Sucesso', 'Usuário cadastrado com sucesso!', [
+        { text: 'OK', onPress: () => router.push('/login') },
+      ]);
+    } catch (err) {
+      console.error('Erro ao cadastrar:', err);
+      Alert.alert('Erro', 'Falha ao cadastrar usuário.');
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <SafeAreaView style={style.safeArea}>
@@ -91,12 +111,11 @@ export default function CadastroScreen() {
               <Button
                 mode="contained"
                 style={style.button}
-                onPress={() => {
-                  console.log('Cadastrar pressed, navigating to /map');
-                  router.push('/locAuth');
-                }}
+                onPress={handleCadastro}
+                loading={loading}
+                disabled={loading}
               >
-                Cadastrar
+                {loading ? 'Cadastrando...' : 'Cadastrar'}
               </Button>
 
               <Text onPress={() => router.push('/login')} style={style.redirect}>
