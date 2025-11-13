@@ -9,13 +9,21 @@ export interface Local {
   longitude: number;
 }
 
+export interface LocalUnique {
+    id_locais: number,
+    nome: string,
+    descricao: string,
+    media_avaliacao: number,
+    categorias: string[]
+}
+
 export const LocalService = {
   async getAll(): Promise<Local[]> {
     const response = await api.get('/Locais');
     return response.data;
   },
 
-  async getById(id: number): Promise<Local> {
+  async getById(id: number): Promise<LocalUnique> {
     const response = await api.get(`/Locais/${id}`);
     return response.data;
   },

@@ -18,7 +18,6 @@ export default function ProfileScreen() {
     (async () => {
       try{
         const res = await LocalService.getByUser();
-        console.log(res)
         setData(res)
       } catch (error) {
         console.error('Erro ao carregar mapa:', error);
@@ -39,11 +38,38 @@ export default function ProfileScreen() {
           <MaterialCommunityIcons name="exit-to-app" size={24} color="red" />
           <Text style={styles.buttonText}>Sair</Text>
         </TouchableOpacity>
-        <FlatListPerfil data={data} onPress={() => {}} />
+        <FlatListPerfil 
+          data={data} 
+          onPress={async (item) => {
+            Alert.alert(
+              'Confirmar exclusão',
+              `Deseja excluir o local "${item.nome}"?`,
+              [
+                { text: 'Cancelar', style: 'cancel' },
+                {
+                  text: 'Excluir',
+                  style: 'destructive',
+                  onPress: async () => {
+                    try {
+                      await LocalService.delete(item.id_locais);
+                      setData((prev) => prev.filter((local) => local.id_locais !== item.id_locais));
+                      Alert.alert('Sucesso', 'Local excluído com sucesso.');
+                    } catch (error) {
+                      console.error('Erro ao deletar local:', error);
+                      Alert.alert('Erro', 'Não foi possível excluir o local.');
+                    }
+                  },
+                },
+              ]
+            );
+          }}
+        />
       </View>
-      <TouchableOpacity style={styles.oficialButton} onPress={() => setVisible(true)}>
+      {/*
+        <TouchableOpacity style={styles.oficialButton} onPress={() => setVisible(true)}>
         <Text style={styles.oficialButtonText}>Oficializar</Text>
       </TouchableOpacity>
+      */}
       <PrefeituraModal visible={visible} onClose={() => setVisible(false)} />
     </SafeAreaView>
   );

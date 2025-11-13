@@ -1,8 +1,9 @@
-import { Local } from '@/services/api/local';
+import { LocalUnique } from '@/services/api/local';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
   Dimensions,
+  FlatList,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -16,7 +17,7 @@ import { ActivityIndicator, Card, Modal, Portal } from 'react-native-paper';
 interface LocalModalProps {
   visible: boolean;
   loading: boolean;
-  local: Local | null;
+  local: LocalUnique | null;
   onClose: () => void;
 }
 
@@ -24,93 +25,119 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 const SCREEN_HEIGHT = Dimensions.get('window').height;
 const MODAL_HEIGHT = SCREEN_HEIGHT * 0.75;
 
-export default function LocalModal({ visible, loading, local, onClose}: LocalModalProps) {
+export default function LocalModal({ visible, loading, local, onClose }: LocalModalProps) {
   const [index, setIndex] = useState(0);
 
+  if (!visible) return null; // evita renderização desnecessária
   if (!local) return null;
 
-  //const categories = local.categories || [];
+  const categories: string[] = local.categorias || [];
   const itemsPerPage = 3;
 
-  // Infinite carousel logic
   const handleNext = () => {
-    //setIndex((prev) => (prev + itemsPerPage) % categories.length);
+    if (categories.length === 0) return;
+    setIndex((prev) => (prev + itemsPerPage) % categories.length);
   };
 
   const handlePrev = () => {
-    //setIndex((prev) => (prev - itemsPerPage + categories.length) % categories.length);
+    if (categories.length === 0) return;
+    setIndex((prev) => (prev - itemsPerPage + categories.length) % categories.length);
   };
 
   const getDisplayedCategories = (start: number) => {
+    if (categories.length === 0) return [];
     const end = start + itemsPerPage;
-    //if (end <= categories.length) return categories.slice(start, end);
-    //return [...categories.slice(start), ...categories.slice(0, end - categories.length)];
+    if (end <= categories.length) return categories.slice(start, end);
+    return [...categories.slice(start), ...categories.slice(0, end - categories.length)];
   };
 
   const displayedCategories = getDisplayedCategories(index);
+  const categoryColors: Record<string, string> = {
+    Parques: '#4CAF50',       // verde
+    Museus: '#9C27B0',        // roxo
+    Restaurantes: '#FF7043',  // laranja
+    Praias: '#2196F3',        // azul
+    Eventos: '#E91E63',       // rosa
+    Lazer: '#FFC107',         // amarelo
+    Mercado: '#8D6E63',       // marrom
+    Hospedagem: '#3F51B5',    // azul escuro
+    Exótico: '#009688',       // verde água
+    Cultural: '#BA68C8',      // lilás
+    Aventura: '#FF5722',      // laranja avermelhado
+  };
+
+  // Função para pegar cor (fallback se categoria não tiver cor)
+  const getCategoryColor = (name: string) => categoryColors[name] || '#607D8B';
 
   return (
     <Portal>
-      <Modal visible={visible} onDismiss={onClose} contentContainerStyle={styles.modalContainer}>
+      <Modal
+        visible={visible}
+        onDismiss={onClose}
+        contentContainerStyle={styles.modalContainer}
+      >
         <TouchableOpacity style={styles.buttonExit} onPress={onClose}>
-          <MaterialCommunityIcons name="close" size={26} color="black" />
+          <MaterialCommunityIcons name="close" size={26} color="white" />
         </TouchableOpacity>
-
         <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
           style={styles.keyboardView}
         >
-          <Card style={styles.card} elevation={5}>
+          <Card style={styles.card} elevation={3}>
             <Card.Content style={styles.cardContent}>
               {loading ? (
                 <ActivityIndicator size="large" color="#0077B6" />
               ) : (
-
                 <ScrollView
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-                contentContainerStyle={styles.scrollContent}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  contentContainerStyle={styles.scrollContent}
                 >
                   {/* Buttons */}
                   <View style={styles.buttonsContainer}>
                     <TouchableOpacity style={styles.infoButton}>
                       <Text style={styles.buttonTextInfo}>Informações</Text>
                     </TouchableOpacity>
-
                     <TouchableOpacity style={styles.reviewsButton}>
                       <Text style={styles.buttonText}>Avaliações</Text>
                     </TouchableOpacity>
                   </View>
-
                   {/* Local title */}
                   <Text style={styles.localTitle}>{local.nome}</Text>
-
                   {/* Categories carousel */}
-                  { /*categories.length > 0 && (
+                  {categories.length > 0 && (
                     <View style={styles.carouselContainer}>
-                    <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
-                    <MaterialCommunityIcons name="chevron-left" size={26} color="#2B2D42" />
-                    </TouchableOpacity>
-                  
-                    <FlatList
-                    data={displayedCategories}
-                    keyExtractor={(item) => item.id}
-                    horizontal
-                    scrollEnabled={false}
-                    renderItem={({ item }) => (
-                      <View style={[styles.categoryBadge, { backgroundColor: item.color }]}>
-                      <Text style={styles.categoryText}>{item.label}</Text>
-                      </View>
-                      )}
-                      contentContainerStyle={styles.categoriesContainer}
-                      />
-                    
-                      <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
-                      <MaterialCommunityIcons name="chevron-right" size={26} color="#2B2D42" />
+                      <TouchableOpacity onPress={handlePrev} style={styles.arrowButton}>
+                        <MaterialCommunityIcons
+                          name="chevron-left"
+                          size={26}
+                          color="#2B2D42"
+                        />
                       </TouchableOpacity>
-                      </View>
-                      XX)*/}
-
+                      <FlatList
+                        data={displayedCategories}
+                        keyExtractor={(item, idx) => `${item}-${idx}`}
+                        horizontal
+                        scrollEnabled={false}
+                        renderItem={({ item }) => (
+                          <View style={[
+                            styles.categoryBadge,
+                            { backgroundColor: getCategoryColor(item) }
+                          ]}>
+                            <Text style={styles.categoryText}>{item}</Text>
+                          </View>
+                        )}
+                        contentContainerStyle={styles.categoriesContainer}
+                      />
+                      <TouchableOpacity onPress={handleNext} style={styles.arrowButton}>
+                        <MaterialCommunityIcons
+                          name="chevron-right"
+                          size={26}
+                          color="#2B2D42"
+                        />
+                      </TouchableOpacity>
+                    </View>
+                  )}
                   {/* Local description */}
                   <Text style={styles.localDescription}>{local.descricao}</Text>
                 </ScrollView>

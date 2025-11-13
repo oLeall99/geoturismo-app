@@ -85,7 +85,6 @@ export default function NewLocalModal({
           ...cat,
           localIndex: index, // índice local usado só para renderização
         }));
-        console.log(categoriasComIndex)
 
         setCategorias(categoriasComIndex);
       } catch (error) {
@@ -131,7 +130,6 @@ export default function NewLocalModal({
       }
 
       const { latitude, longitude } = geoResult[0];
-      console.log(selectedCategories)
       const filtros =
         selectedCategories.length > 0
           ? selectedCategories.map((cat) => ({ categorias_id: cat.id_categorias }))
@@ -146,11 +144,7 @@ export default function NewLocalModal({
         filtros,
       };
 
-      console.log(filtros)
-      console.log(newLocal)
-
       const res = await LocalService.create(newLocal);
-      console.log(res)
       Alert.alert('Sucesso', 'Local cadastrado com sucesso!');
       onClose();
       onLocalAdded();

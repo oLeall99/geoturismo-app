@@ -16,8 +16,8 @@ export default function FlatListPerfil({ data, onPress }: FlatListPerfilProps) {
           keyExtractor={(_, index) => index.toString()} // usa o índice como chave
           renderItem={({ item, index }) => (
             <Item
-              title={`${item.nome}`} // exibe o índice visivelmente, se quiser
-              onPress={() => onPress(item)}
+            title={`${item.nome}`} // exibe o índice visivelmente, se quiser
+            onPress={() => onPress(item)}
             />
           )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
@@ -30,7 +30,7 @@ export default function FlatListPerfil({ data, onPress }: FlatListPerfilProps) {
 const Item = ({ title, onPress }: { title: string; onPress: () => void }) => (
   <View style={styles.item}>
     <Text style={styles.text}>{title}</Text>
-    <TouchableOpacity onPress={onPress}>
+    <TouchableOpacity onPress={() => {onPress()}}>
       <MaterialCommunityIcons name="trash-can-outline" size={20} color="#2B2D42" />
     </TouchableOpacity>
   </View>

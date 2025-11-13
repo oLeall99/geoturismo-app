@@ -1,7 +1,7 @@
 import CustomIconButton from '@/components/ui/CustomIconButton';
 import LocalModal from '@/components/ui/modals/LocalModal';
 import NewLocalModal from '@/components/ui/modals/NewLocalModal';
-import { Local, LocalService } from '@/services/api/local';
+import { Local, LocalService, LocalUnique } from '@/services/api/local';
 import * as Location from 'expo-location';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function MapScreen() {
   const [newLocalModalVisible, setNewLocalModalVisible] = useState(false);
   const [localModalVisible, setLocalModalVisible] = useState(false);
-  const [selectedLocal, setSelectedLocal] = useState<Local | null>(null);
+  const [selectedLocal, setSelectedLocal] = useState<LocalUnique | null>(null);
   const [region, setRegion] = useState<Region | null>(null);
   const [locals, setLocals] = useState<Local[]>([]);
   const [loading, setLoading] = useState(true);
@@ -163,9 +163,8 @@ export default function MapScreen() {
             id_locais: selectedLocal.id_locais,
             nome: selectedLocal.nome,
             descricao: selectedLocal.descricao,
-            endereco: selectedLocal.endereco,
-            latitude: selectedLocal.latitude,
-            longitude: selectedLocal.longitude,
+            categorias: selectedLocal.categorias,
+            media_avaliacao: selectedLocal.media_avaliacao
           }}
           loading={loadingLocalDetails}
         />
