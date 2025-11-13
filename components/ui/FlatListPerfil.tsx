@@ -1,15 +1,10 @@
+import { Local } from '@/services/api/local';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Card, Text } from 'react-native-paper';
-
-export interface ItemProps {
-  id: string;
-  title: string;
-}
-
 interface FlatListPerfilProps {
-  data: ItemProps[];
-  onPress: (item: ItemProps) => void;
+  data: Local[];
+  onPress: (item: Local) => void;
 }
 
 export default function FlatListPerfil({ data, onPress }: FlatListPerfilProps) {
@@ -18,8 +13,13 @@ export default function FlatListPerfil({ data, onPress }: FlatListPerfilProps) {
       <Card.Content style={styles.list}>
         <FlatList
           data={data}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item }) => <Item title={item.title} onPress={() => onPress(item)} />}
+          keyExtractor={(_, index) => index.toString()} // usa o índice como chave
+          renderItem={({ item, index }) => (
+            <Item
+              title={`${item.nome}`} // exibe o índice visivelmente, se quiser
+              onPress={() => onPress(item)}
+            />
+          )}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </Card.Content>

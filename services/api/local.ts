@@ -20,8 +20,18 @@ export const LocalService = {
     return response.data;
   },
 
+  async getByUser(): Promise<Local[]> {
+    const response = await api.get('/Locais/meuslocais');
+    return response.data;
+  },
+
   async create(dados: Omit<Local, 'id_locais'>): Promise<Local> {
     const response = await api.post('/Locais', dados);
     return response.data;
   },
+
+  async delete(id: number){
+    const response = await api.delete(`/Locais/${id}`);
+    return response.status
+  }
 };

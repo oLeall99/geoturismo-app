@@ -1,8 +1,9 @@
 import { api } from '../config';
 
 export interface Categoria {
-  id: number;
+  id_categorias: string;
   nome: string;
+  localIndex: number;
 }
 
 export const CategoriaService = {

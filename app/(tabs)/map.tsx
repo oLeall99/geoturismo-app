@@ -34,6 +34,7 @@ export default function MapScreen() {
             'Não é possível mostrar o mapa sem acesso à localização.'
           );
           setLoading(false);
+
           return;
         }
 

@@ -1,30 +1,31 @@
-import FlatListPerfil, { ItemProps } from '@/components/ui/FlatListPerfil';
+import FlatListPerfil from '@/components/ui/FlatListPerfil';
 import { AuthService } from '@/services/auth';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // @ts-ignore
 import ProfileIcon from '@/assets/icons/profile-icon.svg';
 import PrefeituraModal from '@/components/ui/modals/PrefeituraModal';
+import { Local, LocalService } from '@/services/api/local';
 import { router } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const data: ItemProps[] = [
-  {
-    id: '1',
-    title: 'Venda do seu Zé',
-  },
-  {
-    id: '2',
-    title: 'Cabaré da Lucéia',
-  },
-  {
-    id: '3',
-    title: 'Bar do José',
-  },
-];
 
 export default function ProfileScreen() {
+  const [data, setData] = useState<Local[]>([]);
+
+  useEffect(() => {
+    (async () => {
+      try{
+        const res = await LocalService.getByUser();
+        console.log(res)
+        setData(res)
+      } catch (error) {
+        console.error('Erro ao carregar mapa:', error);
+        Alert.alert('Erro', 'Não foi possível carregar os locais.');
+      }
+    })();
+  }, []);
   const [visible, setVisible] = useState(false);
   return (
     <SafeAreaView style={styles.container}>
