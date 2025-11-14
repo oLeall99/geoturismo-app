@@ -11,7 +11,7 @@ export interface Local {
 
 export interface LocalUnique {
     id_locais: number,
-    name: string,
+    nome: string,
     descricao: string,
     media_avaliacao: number,
     categorias: string[]

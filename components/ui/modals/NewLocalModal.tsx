@@ -61,6 +61,17 @@ export default function NewLocalModal({
     setMenuVisible(false);
   }
 
+  function resetForm() {
+  setLocalName('');
+  setStreet('');
+  setNumber('');
+  setCep('');
+  setComplement('');
+  setDescription('');
+  setSelectedCategories([]);
+}
+
+
   function handleSelectCategory(cat: Categoria & { localIndex: number }) {
     setSelectedCategories((prev) => {
       const exists = prev.some((c) => c.localIndex === cat.localIndex);
@@ -140,6 +151,7 @@ export default function NewLocalModal({
       console.log("📥 RESPOSTA API:", res);
 
       Alert.alert('Sucesso', 'Local cadastrado com sucesso!');
+      resetForm();
       onClose();
       onLocalAdded();
 
@@ -362,7 +374,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   cardContent: {
-    flex: 1,
+    height: '92%',
   },
   scrollContent: {
     paddingBottom: 20,
