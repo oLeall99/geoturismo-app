@@ -96,6 +96,7 @@ export default function LoginScreen() {
                 onPress={handleLogin}
                 loading={loading}
                 disabled={loading}
+                labelStyle={{ color: '#FFFFFF' }}
               >
                 {loading ? 'Entrando...' : 'Entrar'}
               </Button>
@@ -165,6 +166,7 @@ const style = StyleSheet.create({
     backgroundColor: '#2B2D42',
     fontSize: 17,
     borderRadius: 6,
+    color: '#FFFFFF',
   },
   redirect: {
     width: '100%',

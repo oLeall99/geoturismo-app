@@ -20,7 +20,7 @@ export default function CustomTextInput({
     <TextInput
       placeholder={label || ''}
       value={value}
-      keyboardType={type} // 🔹 substitui inputMode
+      keyboardType={type === 'default' ? 'visible-password' : type}
       onChangeText={onChangeText}
       textColor="#2B2D42"
       outlineColor="#2B2D42"
@@ -32,8 +32,9 @@ export default function CustomTextInput({
       style={multiline ? styles.multiline : styles.input}
       underlineStyle={{ backgroundColor: '#F2F2F2' }}
 
-      // 🔹 Desativa sugestões, correções e preenchimentos automáticos
+      // 🚫 Desativa sugestões, correções, capitalização e preenchimentos automáticos
       autoCorrect={false}
+      spellCheck={false} // ✅ adicione esta linha
       autoComplete="off"
       autoCapitalize="none"
       importantForAutofill="no"

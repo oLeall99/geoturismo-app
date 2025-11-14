@@ -39,6 +39,7 @@ export default function NewLocalModal({
   onClose,
   onLocalAdded,
 }: NewLocalModalProps) {
+  
   const [localName, setLocalName] = useState('');
   const [street, setStreet] = useState('');
   const [number, setNumber] = useState('');
@@ -62,30 +63,22 @@ export default function NewLocalModal({
 
   function handleSelectCategory(cat: Categoria & { localIndex: number }) {
     setSelectedCategories((prev) => {
-      const alreadySelected = prev.some((c) => c.localIndex === cat.localIndex);
-      if (alreadySelected) {
-        // remove se já estava selecionada
-        return prev.filter((c) => c.localIndex !== cat.localIndex);
-      } else {
-        // adiciona se não estava
-        return [...prev, cat];
-      }
+      const exists = prev.some((c) => c.localIndex === cat.localIndex);
+      return exists
+        ? prev.filter((c) => c.localIndex !== cat.localIndex)
+        : [...prev, cat];
     });
   }
-
 
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
         const cats = await CategoriaService.getAll();
-
-        // Adiciona um índice local a cada categoria
         const categoriasComIndex = cats.map((cat, index) => ({
           ...cat,
-          localIndex: index, // índice local usado só para renderização
+          localIndex: index,
         }));
-
         setCategorias(categoriasComIndex);
       } catch (error) {
         console.error('Erro ao carregar categorias:', error);
@@ -97,24 +90,22 @@ export default function NewLocalModal({
   }, []);
 
   useEffect(() => {
-    if (!visible) {
-      setMenuVisible(false);
-    }
+    if (!visible) setMenuVisible(false);
   }, [visible]);
 
   async function handleCreateLocal() {
-    const missingFields: string[] = [];
+    const missing: string[] = [];
 
-    if (!localName.trim()) missingFields.push('Nome do Local');
-    if (!street.trim()) missingFields.push('Rua');
-    if (!number.trim()) missingFields.push('Número');
-    if (!cep.trim()) missingFields.push('CEP');
-    if (!selectedCategories) missingFields.push('Categorias');
+    if (!localName.trim()) missing.push('Nome do Local');
+    if (!street.trim()) missing.push('Rua');
+    if (!number.trim()) missing.push('Número');
+    if (!cep.trim()) missing.push('CEP');
+    if (selectedCategories.length === 0) missing.push('Categorias');
 
-    if (missingFields.length > 0) {
+    if (missing.length > 0) {
       Alert.alert(
         'Campos obrigatórios',
-        `Preencha os seguintes campos: ${missingFields.join(', ')}.`
+        `Preencha os seguintes campos: ${missing.join(', ')}.`
       );
       return;
     }
@@ -126,34 +117,42 @@ export default function NewLocalModal({
       const geoResult = await Location.geocodeAsync(fullAddress);
 
       if (!geoResult || geoResult.length === 0) {
-        throw new Error('Não foi possível obter a localização.');
+        throw new Error('Não foi possível obter a geolocalização desse endereço.');
       }
 
       const { latitude, longitude } = geoResult[0];
-      const filtros =
-        selectedCategories.length > 0
-          ? selectedCategories.map((cat) => ({ categorias_id: cat.id_categorias }))
-          : [];
 
       const newLocal = {
         nome: localName,
-        endereco: fullAddress,
         descricao: description,
-        longitude,
+        endereco: fullAddress,
         latitude,
-        filtros,
+        longitude,
+        filtros: selectedCategories.map(cat => ({
+          categorias_id: cat.id_categorias,
+        })),
       };
 
+      console.log("📤 ENVIANDO PARA API:", newLocal);
+
       const res = await LocalService.create(newLocal);
+
+      console.log("📥 RESPOSTA API:", res);
+
       Alert.alert('Sucesso', 'Local cadastrado com sucesso!');
       onClose();
       onLocalAdded();
+
     } catch (error: any) {
-      console.error(error);
-      Alert.alert(
-        'Erro ao cadastrar',
-        'Falha ao cadastrar o local. Verifique os valores informados e tente novamente.'
-      );
+      console.log("❌ ERRO AO CADASTRAR LOCAL:");
+      if (error.response) {
+        console.log("Status:", error.response.status);
+        console.log("Data:", error.response.data);
+      } else {
+        console.log(error);
+      }
+
+      Alert.alert('Erro ao cadastrar', 'Falha ao cadastrar o local.');
     } finally {
       setLoading(false);
     }
@@ -185,6 +184,8 @@ export default function NewLocalModal({
                 keyboardShouldPersistTaps="handled"
                 contentContainerStyle={styles.scrollContent}
               >
+
+                {/* NOME DO LOCAL */}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Nome do Local:</Text>
                   <CustomTextInput
@@ -195,6 +196,7 @@ export default function NewLocalModal({
                   />
                 </View>
 
+                {/* RUA */}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Rua:</Text>
                   <CustomTextInput
@@ -205,6 +207,7 @@ export default function NewLocalModal({
                   />
                 </View>
 
+                {/* NÚMERO + CEP */}
                 <View style={styles.row}>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.descriptionLabel}>Número:</Text>
@@ -227,6 +230,7 @@ export default function NewLocalModal({
                   </View>
                 </View>
 
+                {/* COMPLEMENTO */}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Complemento:</Text>
                   <CustomTextInput
@@ -237,11 +241,13 @@ export default function NewLocalModal({
                   />
                 </View>
 
+                {/* CATEGORIAS */}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Categorias:</Text>
+
                   <View
-                    onLayout={(event) =>
-                      setCategoryInputWidth(event.nativeEvent.layout.width)
+                    onLayout={(e) =>
+                      setCategoryInputWidth(e.nativeEvent.layout.width)
                     }
                   >
                     <Menu
@@ -258,7 +264,9 @@ export default function NewLocalModal({
                         >
                           <View style={styles.chipInputContainer}>
                             {selectedCategories.length === 0 ? (
-                              <Text style={styles.chipPlaceholder}>Selecione as categorias</Text>
+                              <Text style={styles.chipPlaceholder}>
+                                Selecione as categorias
+                              </Text>
                             ) : (
                               <View style={styles.chipWrapper}>
                                 {selectedCategories.map((cat) => (
@@ -277,30 +285,34 @@ export default function NewLocalModal({
                                 ))}
                               </View>
                             )}
-
                           </View>
                         </TouchableOpacity>
                       }
                     >
-                    {categorias.map((cat) => {
-                      const isSelected = selectedCategories.some(
-                        (c) => c.localIndex === cat.localIndex
-                      );
-                      return (
-                        <Menu.Item
-                          key={cat.localIndex}
-                          onPress={() => handleSelectCategory(cat)}
-                          title={cat.nome}
-                          leadingIcon={isSelected ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                        />
-                      );
-                    })}
-                    
+
+                      {categorias.map((cat) => {
+                        const isSelected = selectedCategories.some(
+                          (c) => c.localIndex === cat.localIndex
+                        );
+                        return (
+                          <Menu.Item
+                            key={cat.localIndex}
+                            onPress={() => handleSelectCategory(cat)}
+                            title={cat.nome}
+                            leadingIcon={
+                              isSelected
+                                ? 'checkbox-marked'
+                                : 'checkbox-blank-outline'
+                            }
+                          />
+                        );
+                      })}
 
                     </Menu>
                   </View>
                 </View>
 
+                {/* DESCRIÇÃO */}
                 <View style={styles.descriptionContainer}>
                   <Text style={styles.descriptionLabel}>Descrição:</Text>
                   <CustomTextInput
@@ -313,6 +325,7 @@ export default function NewLocalModal({
                 </View>
               </ScrollView>
 
+              {/* BOTÃO FINAL */}
               <CustomButton
                 title={loading ? 'Cadastrando...' : 'Cadastrar'}
                 onPress={handleCreateLocal}
@@ -326,9 +339,9 @@ export default function NewLocalModal({
   );
 }
 
-
 const styles = StyleSheet.create({
   modalContainer: {
+    flex: 1,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

@@ -114,6 +114,7 @@ export default function CadastroScreen() {
                 onPress={handleCadastro}
                 loading={loading}
                 disabled={loading}
+                labelStyle={{ color: '#FFFFFF' }}
               >
                 {loading ? 'Cadastrando...' : 'Cadastrar'}
               </Button>
@@ -181,6 +182,7 @@ const style = StyleSheet.create({
     backgroundColor: '#2B2D42',
     fontSize: 17,
     borderRadius: 6,
+    color: '#FFFFFF',
   },
   redirect: {
     width: '100%',
